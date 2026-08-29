@@ -34,12 +34,11 @@
             transition: opacity 0.8s ease, visibility 0.8s;
         }
         .songkok-anim {
-            width: 160px; height: auto;
-            animation: bounceIn 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            width: 150px; height: auto;
+            animation: bounceIn 1.2s forwards;
         }
         .lontara-splash {
             font-size: 3rem; color: var(--p-red); margin-top: 10px;
-            animation: fadeIn 1.5s ease;
         }
         @keyframes bounceIn {
             0% { transform: scale(0); opacity: 0; }
@@ -47,7 +46,7 @@
             100% { transform: scale(1); }
         }
 
-        /* --- UI UTAMA --- */
+        /* --- UI STYLING --- */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.7); }
         .tab-content { display: none; width: 100%; }
@@ -59,8 +58,8 @@
         .ai-chat-box { height: 250px; overflow-y: auto; scroll-behavior: smooth; }
         .fade-out { opacity: 0; visibility: hidden; }
         
-        /* Style Lontara Khusus Modul */
-        .lontara-modul { font-size: 1.8rem; color: var(--p-red); line-height: 1; margin-bottom: 4px; }
+        /* Lontara khusus modul */
+        .lontara-modul { font-size: 2rem; color: var(--p-red); line-height: 1; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -69,7 +68,7 @@
 <div id="splash-screen">
     <img src="songkok.png" alt="Songkok Sultan Hasanuddin" class="songkok-anim">
     <div class="lontara-splash">ᨌᨑᨉᨙ</div>
-    <div class="text-xl font-black tracking-[0.2em] text-red-700 -mt-2 italic uppercase">CARA'DE</div>
+    <div class="text-xl font-black tracking-[0.2em] text-red-700 -mt-2 italic">CARA'DE</div>
 </div>
 
 <!-- 2. HEADER -->
@@ -86,7 +85,7 @@
                     <span class="text-[9px] text-red-600 font-bold leading-none mt-1">ᨌᨑᨉᨙ</span>
                 </div>
             </div>
-            <button onclick="requestNotification()" class="bg-green-100 p-2 rounded-full shadow-sm text-xs">🔔</button>
+            <button onclick="requestNotification()" class="bg-green-100 p-2 rounded-full text-xs shadow-sm">🔔</button>
         </div>
 
         <nav class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
@@ -98,7 +97,7 @@
     </div>
 </header>
 
-<!-- 3. TAB CONTENT: MODUL (DENGAN LONTARA) -->
+<!-- 3. TAB MODUL (DENGAN LONTARA) -->
 <main id="tab-modul" class="tab-content active w-full px-4 py-6 max-w-7xl mx-auto">
     <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-2">
         <button onclick="setModule(1)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-orange-500 italic">01 APPARE'</button>
@@ -108,39 +107,43 @@
         <button onclick="setModule(5)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-purple-500 italic">05 PA'BULOANG</button>
     </div>
     
-    <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[420px]"></div>
+    <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[420px]">
+        <!-- Konten diisi JS -->
+    </div>
 </main>
 
 <!-- TAB CUACA & AI -->
 <main id="tab-cuaca" class="tab-content w-full px-4 py-6 max-w-4xl mx-auto space-y-6">
     <div class="bg-gradient-to-br from-green-600 via-green-700 to-blue-700 text-white p-6 rounded-[2.5rem] shadow-xl">
         <h2 id="live-temp" class="text-6xl font-black italic tracking-tighter">--°C</h2>
-        <p id="live-desc" class="text-sm font-bold uppercase italic mt-2">Menghubungkan...</p>
+        <p id="live-desc" class="text-sm font-bold uppercase italic mt-2">Menghubungkan satelit...</p>
     </div>
     <div class="bg-white rounded-[2.5rem] p-6 shadow-xl border border-green-100">
         <div id="ai-chat-box" class="ai-chat-box space-y-4 mb-4 no-scrollbar">
             <div class="bg-green-50 p-4 rounded-3xl rounded-tl-none text-[11px] font-semibold italic text-green-800">
-                "Salama' ki'! Saya asisten digital CAR'ADE. Ada yang bisa saya bantu?"
+                "Salama' ki'! Saya asisten digital CAR'ADE. Ingin tahu tentang program PPKO kami?"
             </div>
         </div>
         <div class="flex gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-200">
-            <input id="ai-input" type="text" placeholder="Tanya tentang program..." class="flex-1 bg-transparent px-4 text-[11px] font-bold outline-none italic">
+            <input id="ai-input" type="text" placeholder="Tanya tentang modul..." class="flex-1 bg-transparent px-4 text-[11px] font-bold outline-none italic">
             <button onclick="askAI()" class="bg-green-600 text-white w-10 h-10 rounded-full flex items-center justify-center">➜</button>
         </div>
     </div>
 </main>
 
-<!-- TAB PERSONIL (BERSIH DARI LONTARA) -->
+<!-- TAB PERSONIL (ALFABET SAJA) -->
 <main id="tab-tim" class="tab-content w-full px-4 py-6 max-w-7xl mx-auto">
     <div class="mb-10 bg-green-900 text-white p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center gap-6">
         <div class="text-5xl">👨‍🏫</div>
         <div>
-            <p class="text-[10px] font-black text-green-400 uppercase italic">Dosen Pendamping</p>
-            <h3 class="text-2xl font-black uppercase italic tracking-tighter">Husnul Mubarak, S.TP., M.Si</h3>
-            <p class="text-[9px] opacity-60 font-bold uppercase mt-1">Universitas Hasanuddin // UNHAS</p>
+            <p class="text-[10px] font-black text-green-400 uppercase italic leading-none">Dosen Pendamping</p>
+            <h3 class="text-2xl font-black uppercase italic tracking-tighter mt-1">Husnul Mubarak, S.TP., M.Si</h3>
+            <p class="text-[9px] opacity-60 font-bold uppercase mt-1 tracking-widest">Universitas Hasanuddin (UNHAS)</p>
         </div>
     </div>
-    <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+    <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <!-- Konten diisi JS -->
+    </div>
 </main>
 
 <!-- TAB LOKASI -->
@@ -148,12 +151,12 @@
     <div id="map" class="shadow-2xl"></div>
 </main>
 
-<footer class="py-20 text-center opacity-30 italic">
-    <p class="text-[9px] font-black uppercase tracking-[1em] text-green-900">CARA'DE // 2026</p>
+<footer class="py-20 text-center opacity-30 italic text-[9px] font-black uppercase tracking-[1em]">
+    CARA'DE // 2026
 </footer>
 
 <script>
-    // --- 1. PWA & SPLASH LOGIC ---
+    // 1. SPLASH SCREEN & PWA
     if ('serviceWorker' in navigator) { 
         navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
     }
@@ -165,7 +168,7 @@
         }, 3000);
     });
 
-    // --- 2. MODUL RENDER (DENGAN LONTARA) ---
+    // 2. MODUL RENDER DENGAN LONTARA & FIX PDF
     const mods = {
         1: { t: "APPARE'", l: "ᨕᨄᨑᨙ", s: "Teknologi Pakan", i: "⚙️", c: "orange", d: "Mesin produksi pakan mandiri limbah lokal." },
         2: { t: "MAGGOT", l: "ᨑᨁᨚ", s: "Protein Alternatif", i: "🪱", c: "green", d: "Budidaya Maggot BSF pengurai sampah organik." },
@@ -183,12 +186,22 @@
                 <h2 class="text-4xl font-black italic text-green-950 uppercase leading-none">${m.t}</h2>
                 <h4 class="text-xs font-bold text-green-600 italic mt-2 uppercase tracking-widest">${m.s}</h4>
                 <p class="text-green-800/70 text-sm italic leading-relaxed px-4 my-8">"${m.d}"</p>
-                <button class="w-full bg-green-700 text-white py-5 rounded-[2.5rem] font-black text-[11px] uppercase italic transition active:scale-95">Akses Dokumen PDF</button>
+                <!-- PERBAIKAN TOMBOL PDF -->
+                <button onclick="window.open('modul${id}.pdf', '_blank')" class="w-full bg-green-700 text-white py-5 rounded-[2.5rem] font-black text-[11px] uppercase italic transition active:scale-95 shadow-xl">Buka Dokumen Modul PDF</button>
             </div>
         `;
     }
 
-    // --- 3. TAB NAV & MAPS ---
+    // 3. WEATHER & TABS
+    async function fetchWeather() {
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-5.2284&longitude=119.4624&current_weather=true');
+            const data = await res.json();
+            document.getElementById('live-temp').innerText = Math.round(data.current_weather.temperature) + '°C';
+            document.getElementById('live-desc').innerText = 'Langit Desa Tinggimae';
+        } catch (e) { console.log("Weather error"); }
+    }
+
     function showTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -198,39 +211,15 @@
         window.scrollTo({top:0, behavior:'smooth'});
     }
 
-    let map;
-    function initMap() {
-        if (map) { map.invalidateSize(); return; }
-        map = L.map('map').setView([-5.2284, 119.4624], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("<b>Desa Tinggimae</b>").openPopup();
-    }
-
-    // --- 4. WEATHER & TEAM (ASLI TANPA LONTARA) ---
-    async function fetchWeather() {
-        try {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-5.2284&longitude=119.4624&current_weather=true');
-            const data = await res.json();
-            document.getElementById('live-temp').innerText = Math.round(data.current_weather.temperature) + '°C';
-            document.getElementById('live-desc').innerText = 'Kondisi Langit Desa Tinggimae';
-        } catch (e) { console.log("Weather error"); }
-    }
-
+    // 4. TEAM DATA
     const members = [
-        { n: "Yunita Azzahra", nim: "G031241019" },
-        { n: "Abdullah Azzam", nim: "G071241032" },
-        { n: "Andina Putri S.", nim: "G031241054" },
-        { n: "Dwi Aliyah Ananta", nim: "G041241031" },
-        { n: "Nurhikmah", nim: "G041241076" },
-        { n: "Muh. Fadhil", nim: "G041241026" },
-        { n: "Muh. Shadiq A. R.", nim: "G041241014" },
-        { n: "Ahmad Fachraisy A.", nim: "G071241028" },
-        { n: "Amirul Mukminin J.", nim: "G071241039" },
-        { n: "Nurfahmi", nim: "G041231057" },
-        { n: "Fitri Ramadhani", nim: "L061241072" },
-        { n: "Andi Naimah A.", nim: "E011241026" },
-        { n: "Muhammad Agil Agus", nim: "G041241004" },
-        { n: "Diva Najwah Sabila", nim: "G031241015" },
+        { n: "Yunita Azzahra", nim: "G031241019" }, { n: "Abdullah Azzam", nim: "G071241032" },
+        { n: "Andina Putri S.", nim: "G031241054" }, { n: "Dwi Aliyah Ananta", nim: "G041241031" },
+        { n: "Nurhikmah", nim: "G041241076" }, { n: "Muh. Fadhil", nim: "G041241026" },
+        { n: "Muh. Shadiq A. R.", nim: "G041241014" }, { n: "Ahmad Fachraisy A.", nim: "G071241028" },
+        { n: "Amirul Mukminin J.", nim: "G071241039" }, { n: "Nurfahmi", nim: "G041231057" },
+        { n: "Fitri Ramadhani", nim: "L061241072" }, { n: "Andi Naimah A.", nim: "E011241026" },
+        { n: "Muhammad Agil Agus", nim: "G041241004" }, { n: "Diva Najwah Sabila", nim: "G031241015" },
         { n: "Pandin Bidangan T.", nim: "G011231170" }
     ];
     
@@ -240,6 +229,14 @@
             <p class="text-[7px] font-bold text-green-600 mt-1 opacity-60">${m.nim}</p>
         </div>
     `).join('');
+
+    let map;
+    function initMap() {
+        if (map) { map.invalidateSize(); return; }
+        map = L.map('map').setView([-5.2284, 119.4624], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("Desa Tinggimae").openPopup();
+    }
 
     window.onload = () => { setModule(1); fetchWeather(); };
 </script>
