@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>COMMAND CENTER | CARA'DE PPKO UNHAS</title>
+    <title>SMART HUB | CARA'DE PPKO</title>
     
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -17,128 +18,191 @@
             background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); 
             background-attachment: fixed;
             color: var(--dark);
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
         }
-        
-        /* Navigasi Scrollable untuk Mobile */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Animasi Transisi Tab */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeInUp 0.5s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Style Khusus Navigasi */
-        .nav-btn.active { background: var(--p-green); color: white; box-shadow: 0 10px 15px rgba(22, 163, 74, 0.2); }
-        
-        /* Map Responsif */
-        #map { height: 400px; width: 100%; border-radius: 2rem; border: 6px solid white; z-index: 1; }
-        @media (max-width: 640px) { #map { height: 300px; border-radius: 1.5rem; } }
-
-        /* Card Effect */
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.8); }
-        .member-card { transition: all 0.3s ease; }
-        @media (min-width: 1024px) { .member-card:hover { transform: translateY(-10px); background: white; } }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.7); }
+        .tab-content { display: none; width: 100%; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-btn.active { background: var(--p-green); color: white; box-shadow: 0 8px 15px rgba(22, 163, 74, 0.2); }
+        #map { height: 300px; width: 100%; border-radius: 1.5rem; border: 4px solid white; z-index: 10; }
+        .ai-chat-box { height: 250px; overflow-y: auto; scroll-behavior: smooth; }
+        .member-card { transition: transform 0.2s; background: rgba(255, 255, 255, 0.5); }
     </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="w-full overflow-x-hidden m-0 p-0 selection:bg-green-200">
 
-    <!-- HEADER: Berbeda tampilan PC vs HP -->
-    <header class="sticky top-0 z-[100] glass border-b border-green-200 px-4 py-3 md:py-5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            
-            <!-- Branding: Di Kiri (PC), Di Tengah (HP) -->
-            <div class="flex items-center gap-3 bg-white/50 p-2 md:p-3 rounded-2xl border border-white shadow-sm w-full md:w-auto justify-center md:justify-start">
-                <img src="logo-unhas.png" alt="UNHAS" class="h-8 md:h-10 w-auto object-contain">
-                <img src="logo-bem.png" alt="BEM" class="h-8 md:h-10 w-auto object-contain">
-                <img src="logo-gowa.png" alt="GOWA" class="h-8 md:h-10 w-auto object-contain">
-                <div class="w-[1px] h-8 bg-green-200 mx-1 hidden md:block"></div>
-                <div class="text-center md:text-left">
-                    <h1 class="font-['Space_Grotesk'] text-lg md:text-xl font-black tracking-tighter text-green-900 leading-none">CARA'DE</h1>
-                    <p class="text-[8px] md:text-[10px] font-black text-green-600 uppercase tracking-widest">PPKO UNHAS 2026</p>
+    <!-- Push Notification Alert -->
+    <div id="weather-alert" class="hidden bg-orange-600 text-white text-[10px] font-black uppercase py-2 px-4 text-center sticky top-0 z-[110] animate-pulse italic">
+        ⚠️ Peringatan: Cuaca Ekstrem Terdeteksi di Desa Tinggimae!
+    </div>
+
+    <!-- HEADER & LOGO CLUSTER -->
+    <header class="sticky top-0 z-[100] glass border-b border-green-200 px-4 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 bg-white/50 p-2 rounded-2xl border border-white">
+                    <img src="logo-unhas.png" alt="UNHAS" class="h-7 w-auto object-contain">
+                    <img src="logo-bem.png" alt="BEM" class="h-7 w-auto object-contain">
+                    <img src="logo-gowa.png" alt="GOWA" class="h-7 w-auto object-contain">
+                    <div class="w-[1px] h-6 bg-green-200 mx-1"></div>
+                    <span class="font-['Space_Grotesk'] text-sm font-bold tracking-tighter text-green-900 uppercase italic">CARA'DE</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="requestNotification()" class="bg-green-100 p-2 rounded-full text-xs shadow-sm">🔔</button>
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 </div>
             </div>
 
-            <!-- Tab Utama: Berjejer (PC), Geser (HP) -->
-            <nav class="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto justify-start md:justify-end pb-1 md:pb-0">
-                <button onclick="showTab('tab-modul')" id="btn-tab-modul" class="nav-btn active flex-none px-6 py-2.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest transition-all italic border border-green-100 shadow-sm">Modul Hub</button>
-                <button onclick="showTab('tab-tim')" id="btn-tab-tim" class="nav-btn flex-none px-6 py-2.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest transition-all italic border border-green-100 shadow-sm">Personil</button>
-                <button onclick="showTab('tab-lokasi')" id="btn-tab-lokasi" class="nav-btn flex-none px-6 py-2.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest transition-all italic border border-green-100 shadow-sm">Lokasi Maps</button>
+            <!-- Navigasi Tab (Scrollable di Android) -->
+            <nav class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button onclick="showTab('tab-modul')" id="btn-tab-modul" class="nav-btn active flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all italic border border-green-100">Modul Hub</button>
+                <button onclick="showTab('tab-cuaca')" id="btn-tab-cuaca" class="nav-btn flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all italic border border-green-100">Cuaca & AI</button>
+                <button onclick="showTab('tab-tim')" id="btn-tab-tim" class="nav-btn flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all italic border border-green-100">Personil</button>
+                <button onclick="showTab('tab-lokasi')" id="btn-tab-lokasi" class="nav-btn flex-none px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all italic border border-green-100">Lokasi Maps</button>
             </nav>
         </div>
     </header>
 
     <!-- TAB 1: MODUL HUB -->
-    <main id="tab-modul" class="tab-content active max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        <!-- Selector Modul: Horizontal Scroll di HP -->
-        <div class="flex md:grid md:grid-cols-5 gap-3 mb-8 overflow-x-auto no-scrollbar pb-4 md:pb-0">
-            <button onclick="setModule(1)" class="flex-none w-36 md:w-full p-4 glass rounded-3xl text-[9px] md:text-[10px] font-black uppercase border-b-4 border-orange-500 italic shadow-sm hover:bg-white transition">01 APPARE'</button>
-            <button onclick="setModule(2)" class="flex-none w-36 md:w-full p-4 glass rounded-3xl text-[9px] md:text-[10px] font-black uppercase border-b-4 border-green-600 italic shadow-sm hover:bg-white transition">02 MAGGOT</button>
-            <button onclick="setModule(3)" class="flex-none w-36 md:w-full p-4 glass rounded-3xl text-[9px] md:text-[10px] font-black uppercase border-b-4 border-blue-500 italic shadow-sm hover:bg-white transition">03 PANGE'BA</button>
-            <button onclick="setModule(4)" class="flex-none w-36 md:w-full p-4 glass rounded-3xl text-[9px] md:text-[10px] font-black uppercase border-b-4 border-emerald-600 italic shadow-sm hover:bg-white transition">04 PATTAPPARANG</button>
-            <button onclick="setModule(5)" class="flex-none w-36 md:w-full p-4 glass rounded-3xl text-[9px] md:text-[10px] font-black uppercase border-b-4 border-purple-500 italic shadow-sm hover:bg-white transition">05 PA'BULOANG</button>
+    <main id="tab-modul" class="tab-content active w-full px-4 py-6 max-w-7xl mx-auto">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-2">
+            <button onclick="setModule(1)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-orange-500 italic shadow-sm">01 APPARE'</button>
+            <button onclick="setModule(2)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-green-600 italic shadow-sm">02 MAGGOT</button>
+            <button onclick="setModule(3)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-blue-500 italic shadow-sm">03 PANGE'BA</button>
+            <button onclick="setModule(4)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-emerald-600 italic shadow-sm">04 PATTAPPARANG</button>
+            <button onclick="setModule(5)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-purple-500 italic shadow-sm">05 PA'BULOANG</button>
         </div>
         
-        <!-- Area Konten Modul: Grid 1 Kolom (HP), 2 Kolom (PC) -->
-        <div id="module-display" class="bg-white rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-16 shadow-2xl shadow-green-900/10 border border-green-50 min-h-[450px]">
-            <!-- Injected by JS -->
+        <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[450px]">
+            <!-- Injected via JS -->
         </div>
     </main>
 
-    <!-- TAB 2: PERSONIL (GRID RESPONSIF) -->
-    <main id="tab-tim" class="tab-content max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        <!-- Dosen Pendamping: Lebar di PC, Stack di HP -->
-        <div class="mb-12 bg-green-900 text-white p-8 rounded-[2.5rem] md:rounded-[3.5rem] flex flex-col md:flex-row items-center gap-6 md:gap-10 shadow-2xl relative overflow-hidden">
-            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-3xl flex items-center justify-center text-4xl md:text-5xl shadow-xl z-10 border-4 border-green-700/20">👨‍🏫</div>
+    <!-- TAB 2: CUACA & AI -->
+    <main id="tab-cuaca" class="tab-content w-full px-4 py-6 max-w-4xl mx-auto space-y-6">
+        <!-- Live Weather Card -->
+        <div class="bg-gradient-to-br from-green-600 via-green-700 to-blue-700 text-white p-6 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Real-time Desa Tinggimae</p>
+                <div class="flex justify-between items-end mt-4">
+                    <div>
+                        <h2 id="live-temp" class="text-6xl font-black italic tracking-tighter">--°C</h2>
+                        <p id="live-desc" class="text-sm font-bold uppercase mt-2 italic">Menghubungkan Satelit...</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-black uppercase opacity-60">Status Kelembapan</p>
+                        <p id="live-hum" class="text-2xl font-black">--%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-10 -right-5 text-[150px] opacity-10">☁️</div>
+        </div>
+
+        <!-- AI Assistant -->
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-xl border border-green-100">
+            <div class="flex items-center gap-3 mb-6 border-b border-green-50 pb-4">
+                <div class="w-10 h-10 bg-green-600 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg shadow-green-200">🤖</div>
+                <div>
+                    <h4 class="text-xs font-black uppercase text-green-900 leading-none">CARA'DE Assistant</h4>
+                    <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">Smart Brain Online</p>
+                </div>
+            </div>
+            <div id="ai-chat-box" class="ai-chat-box space-y-4 mb-6 no-scrollbar">
+                <div class="bg-green-50 p-4 rounded-3xl rounded-tl-none text-[11px] font-semibold italic text-green-800 leading-relaxed border border-green-100 shadow-sm">
+                    "Halo! Saya asisten digital tim CARA'DE. Ingin tahu tentang 15 personil kami, lokasi Desa Tinggimae, atau rincian 5 modul pengabdian kami?"
+                </div>
+            </div>
+            <div class="flex gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-200 shadow-inner">
+                <input id="ai-input" type="text" placeholder="Tanya tentang program..." class="flex-1 bg-transparent border-none px-4 text-[11px] font-bold outline-none italic">
+                <button onclick="askAI()" class="bg-green-600 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-90">➜</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- TAB 3: PERSONIL -->
+    <main id="tab-tim" class="tab-content w-full px-4 py-6 max-w-7xl mx-auto">
+        <!-- Dosen Pendamping -->
+        <div class="mb-12 bg-green-900 text-white p-8 rounded-[3rem] flex flex-col md:flex-row items-center gap-8 shadow-2xl relative overflow-hidden">
+            <div class="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center text-5xl shadow-xl z-10">👨‍🏫</div>
             <div class="text-center md:text-left z-10">
-                <p class="text-[10px] md:text-[12px] font-black text-green-400 uppercase tracking-widest mb-1 italic">Dosen Pendamping</p>
-                <h3 class="text-2xl md:text-4xl font-black uppercase italic tracking-tighter leading-tight">Husnul Mubarak, S.TP., M.Si</h3>
-                <p class="text-[10px] md:text-sm font-bold opacity-60 mt-1">NIP. 198904062024061001 // Universitas Hasanuddin</p>
+                <p class="text-[10px] font-black text-green-400 uppercase tracking-widest mb-1 italic">Dosen Pendamping</p>
+                <h3 class="text-2xl font-black uppercase italic tracking-tighter leading-tight">Husnul Mubarak, S.TP., M.Si</h3>
+                <p class="text-[9px] font-bold opacity-60 mt-1 uppercase tracking-widest">NIP. 198904062024061001 // UNHAS</p>
             </div>
         </div>
-
-        <h2 class="text-3xl md:text-5xl font-black italic text-green-950 uppercase text-center mb-10 tracking-tighter">The Personnel</h2>
-
-        <!-- Grid: 2 Kolom (HP), 5 Kolom (PC) -->
-        <div id="team-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
-            <!-- Injected by JS -->
+        <h2 class="text-3xl font-black italic text-green-950 uppercase text-center mb-8 tracking-tighter">The Commanders</h2>
+        <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6">
+            <!-- Injected via JS -->
         </div>
     </main>
 
-    <!-- TAB 3: LOKASI (MAPS FULL WIDTH) -->
-    <main id="tab-lokasi" class="tab-content max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl md:text-4xl font-black italic text-green-950 uppercase tracking-tighter">Field Hub</h2>
-            <p class="text-[10px] md:text-xs font-bold text-green-600 uppercase mt-2 tracking-widest italic">Desa Tinggimae, Barombong, Kab. Gowa</p>
+    <!-- TAB 4: LOKASI -->
+    <main id="tab-lokasi" class="tab-content w-full px-4 py-6 max-w-5xl mx-auto">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-black italic text-green-950 uppercase">Field Terminal</h2>
+            <p class="text-[10px] font-bold text-green-600 uppercase mt-1 tracking-[0.3em] italic">Desa Tinggimae, Gowa</p>
         </div>
-        
-        <div id="map"></div>
-        
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 italic">
-            <div class="glass p-6 md:p-10 rounded-[2rem] border-2 border-white shadow-lg">
-                <h4 class="font-black text-green-900 uppercase text-sm md:text-lg mb-4">Informasi Sasaran</h4>
-                <p class="text-xs md:text-sm leading-relaxed text-green-800 font-bold opacity-70">Reaktivasi kolam ikan & pembangunan Smart Greenhouse berbasis IoT untuk kemandirian pangan desa.</p>
+        <div id="map" class="shadow-2xl"></div>
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="glass p-8 rounded-[2rem] border-2 border-white flex flex-col justify-center">
+                <h4 class="font-black text-green-900 uppercase text-sm mb-4 italic">📍 Lokasi Pengabdian</h4>
+                <p class="text-xs text-green-800 font-bold italic leading-relaxed">Pusat integrasi perikanan percontohan dan greenhouse digital di Desa Tinggimae, Gowa.</p>
             </div>
-            <div class="flex flex-col gap-3">
-                <div class="bg-white/80 p-5 rounded-2xl border border-white flex justify-between items-center">
-                    <span class="text-[10px] font-black uppercase text-green-600">Jarak Kampus</span>
-                    <span class="font-bold text-green-950">±20 KM</span>
-                </div>
-                <div class="bg-green-800 p-5 rounded-2xl text-white flex justify-between items-center shadow-lg">
-                    <span class="text-[10px] font-black uppercase text-green-200">Waktu Tempuh</span>
-                    <span class="font-bold">±34 Menit</span>
-                </div>
+            <div class="bg-green-800 p-8 rounded-[2rem] text-white flex justify-between items-center shadow-xl">
+                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Jarak Kampus</span>
+                <span class="font-black italic text-xl tracking-tighter">±20 KM</span>
             </div>
         </div>
     </main>
 
-    <footer class="py-16 text-center opacity-30 italic">
+    <footer class="py-20 text-center opacity-30 italic">
         <p class="text-[9px] font-black uppercase tracking-[1em] text-green-900">CARA'DE // PPKO UNHAS // 2026</p>
     </footer>
 
     <script>
-        // DATA TETAP SAMA
+        // --- 1. PWA & NOTIF ---
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        function requestNotification() {
+            Notification.requestPermission().then(p => { if(p === 'granted') alert("Peringatan Cuaca Aktif!"); });
+        }
+
+        // --- 2. LIVE WEATHER ---
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-5.2284&longitude=119.4624&current_weather=true');
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                document.getElementById('live-temp').innerText = temp + '°C';
+                document.getElementById('live-desc').innerText = 'Kondisi Saat Ini';
+                document.getElementById('live-hum').innerText = '78%'; // Sample hum
+                if (temp > 31) document.getElementById('weather-alert').classList.remove('hidden');
+            } catch (e) { console.error("Weather Fail"); }
+        }
+
+        // --- 3. AI LOGIC ---
+        const knowledge = {
+            "tim": "Tim CARA'DE terdiri dari 15 mahasiswa UNHAS yang diketuai oleh Yunita Azzahra.",
+            "maggot": "Modul Lembang Maggot fokus pada pengolahan sampah organik menjadi pakan tinggi protein.",
+            "lokasi": "Kami mengabdi di Desa Tinggimae, Kab. Gowa.",
+            "dosen": "Dosen pendamping kami adalah Bapak Husnul Mubarak, S.TP., M.Si."
+        };
+        function askAI() {
+            const input = document.getElementById('ai-input').value.toLowerCase();
+            const chat = document.getElementById('ai-chat-box');
+            if(!input) return;
+            chat.innerHTML += `<div class="bg-blue-50 p-3 rounded-2xl rounded-tr-none text-[10px] font-bold text-right ml-10 border border-blue-100">"${input}"</div>`;
+            let res = "Maaf, saya masih tahap belajar. Coba tanya tentang 'Tim', 'Modul', atau 'Lokasi'.";
+            for(let key in knowledge) { if(input.includes(key)) res = knowledge[key]; }
+            setTimeout(() => {
+                chat.innerHTML += `<div class="bg-green-100 p-4 rounded-3xl rounded-tl-none text-[10px] font-bold italic mr-10 shadow-sm border border-green-200 leading-relaxed">"${res}"</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            }, 500);
+            document.getElementById('ai-input').value = "";
+        }
+
+        // --- 4. TEAM RENDER ---
         const members = [
             { n: "Yunita Azzahra", nim: "G031241019", r: "Ketua Tim" },
             { n: "Abdullah Azzam", nim: "G071241032", r: "Anggota" },
@@ -146,7 +210,7 @@
             { n: "Dwi Aliyah Ananta", nim: "G041241031", r: "Anggota" },
             { n: "Nurhikmah", nim: "G041241076", r: "Anggota" },
             { n: "Muh. Fadhil", nim: "G041241026", r: "Anggota" },
-            { n: "Muh. Shadiq A.R.", nim: "G041241014", r: "Anggota" },
+            { n: "Muh. Shadiq A. R.", nim: "G041241014", r: "Anggota" },
             { n: "Ahmad Fachraisy A.", nim: "G071241028", r: "Anggota" },
             { n: "Amirul Mukminin J.", nim: "G071241039", r: "Anggota" },
             { n: "Nurfahmi", nim: "G041231057", r: "Anggota" },
@@ -156,61 +220,56 @@
             { n: "Diva Najwah Sabila", nim: "G031241015", r: "Anggota" },
             { n: "Pandin Bidangan T.", nim: "G011231170", r: "Anggota" }
         ];
-
-        const modules = {
-            1: { t: "APPARE'", s: "Teknologi Pakan", i: "⚙️", c: "orange", d: "Mesin produksi pakan mandiri dari limbah lokal." },
-            2: { t: "MAGGOT", s: "Protein Tinggi", i: "🪱", c: "green", d: "Budidaya Maggot BSF untuk nutrisi pakan alternatif." },
-            3: { t: "PANGE'BA", s: "Otomasi Aerasi", i: "🌊", c: "blue", d: "Sistem penjaga oksigen kolam otomatis & akuaponik." },
-            4: { t: "PATTAPPARANG", s: "Smart Greenhouse", i: "🌿", c: "emerald", d: "Monitoring iklim mikro berbasis sensor IoT (Internet of Things)." },
-            5: { t: "PA'BULOANG", s: "Hilirisasi Digital", i: "📈", c: "purple", d: "Strategi pemasaran dan branding produk inovasi desa." }
-        };
-
         const grid = document.getElementById('team-grid');
         grid.innerHTML = members.map(m => `
-            <div class="member-card glass p-4 md:p-8 rounded-[1.8rem] md:rounded-[2.5rem] border-b-4 md:border-b-8 ${m.r === 'Ketua Tim' ? 'border-green-600 bg-white' : 'border-green-200'}">
-                <div class="w-10 h-10 md:w-14 md:h-14 bg-green-100 rounded-xl md:rounded-2xl mb-4 flex items-center justify-center font-black text-green-700 text-[10px] md:text-xs shadow-inner uppercase italic">${m.n.charAt(0)}${m.n.split(' ').pop().charAt(0)}</div>
-                <h4 class="text-[9px] md:text-[11px] font-black uppercase text-green-950 italic leading-tight mb-1">${m.n}</h4>
-                <p class="text-[7px] md:text-[8px] font-bold text-green-600 uppercase tracking-widest">${m.nim}</p>
-                ${m.r === 'Ketua Tim' ? '<span class="inline-block mt-3 px-2 py-0.5 bg-green-600 text-white text-[6px] md:text-[7px] font-black rounded-full uppercase italic">Leader</span>' : ''}
+            <div class="member-card glass p-4 rounded-[1.8rem] border-b-4 ${m.r === 'Ketua Tim' ? 'border-green-600 bg-white' : 'border-green-200'}">
+                <div class="w-10 h-10 bg-green-100 rounded-xl mb-3 flex items-center justify-center font-black text-green-700 text-[10px] uppercase shadow-inner">${m.n.charAt(0)}${m.n.split(' ').pop().charAt(0)}</div>
+                <h4 class="text-[9px] font-black uppercase text-green-950 leading-none truncate italic">${m.n}</h4>
+                <p class="text-[7px] font-bold text-green-600 uppercase mt-1 opacity-60">${m.nim}</p>
+                ${m.r === 'Ketua Tim' ? '<span class="inline-block mt-2 px-2 py-0.5 bg-green-600 text-white text-[6px] font-black rounded-full uppercase">Leader</span>' : ''}
             </div>
         `).join('');
 
+        // --- 5. MODUL RENDER ---
+        const mods = {
+            1: { t: "APPARE'", s: "Teknologi Pakan", i: "⚙️", c: "orange", d: "Mesin produksi pakan mandiri limbah lokal." },
+            2: { t: "MAGGOT", s: "Protein Alternatif", i: "🪱", c: "green", d: "Budidaya Maggot BSF pengurai sampah organik." },
+            3: { t: "PANGE'BA", s: "Otomasi Aerasi", i: "🌊", c: "blue", d: "Sistem penjaga oksigen kolam otomatis." },
+            4: { t: "PATTAPPARANG", s: "Smart Greenhouse", i: "🌿", c: "emerald", d: "Monitoring iklim mikro berbasis IoT." },
+            5: { t: "PA'BULOANG", s: "Bisnis Digital", i: "📈", c: "purple", d: "Pemasaran digital & branding inovasi desa." }
+        };
+        function setModule(id) {
+            const m = mods[id];
+            document.getElementById('module-display').innerHTML = `
+                <div class="flex flex-col items-center animate-fadeIn text-center">
+                    <div class="text-[120px] mb-4 select-none drop-shadow-xl">${m.i}</div>
+                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-${m.c}-600 bg-${m.c}-50 px-4 py-1.5 rounded-full italic font-bold">Modul Digital 0${id}</span>
+                    <h2 class="text-4xl font-black italic text-green-950 uppercase mt-4 leading-none tracking-tighter">${m.t}</h2>
+                    <h4 class="text-lg font-bold text-green-600 italic mt-2 uppercase tracking-tight">${m.s}</h4>
+                    <p class="text-green-800/70 text-sm italic leading-relaxed px-4 my-8">"${m.d}"</p>
+                    <button onclick="window.open('modul${id}.pdf', '_blank')" class="w-full bg-green-700 hover:bg-green-800 text-white py-5 rounded-[2rem] font-black text-[11px] uppercase tracking-widest shadow-xl shadow-green-900/20 active:scale-95 transition-all italic">Akses Dokumen PDF</button>
+                </div>
+            `;
+        }
+
+        // --- 6. NAV & MAPS ---
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
             if(id === 'tab-lokasi') setTimeout(initMap, 400);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({top:0, behavior:'smooth'});
         }
-
-        function setModule(id) {
-            const m = modules[id];
-            document.getElementById('module-display').innerHTML = `
-                <div class="flex flex-col lg:flex-row gap-8 md:gap-16 items-center animate-fadeIn text-center lg:text-left">
-                    <div class="text-[100px] md:text-[160px] drop-shadow-2xl animate-pulse select-none">${m.i}</div>
-                    <div class="flex-1 space-y-5 md:space-y-8">
-                        <div>
-                            <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-${m.c}-600 bg-${m.c}-50 px-4 py-1 rounded-full italic font-bold">Modul 0${id}</span>
-                            <h2 class="text-3xl md:text-6xl font-black italic text-green-950 uppercase leading-none mt-4 md:mt-8 tracking-tighter">${m.t}</h2>
-                            <h4 class="text-sm md:text-2xl font-bold text-green-600 italic mt-2">${m.s}</h4>
-                        </div>
-                        <p class="text-green-900/70 text-sm md:text-xl italic border-l-4 border-green-100 pl-4 md:pl-8 leading-relaxed">"${m.d}"</p>
-                        <button onclick="window.open('modul${id}.pdf', '_blank')" class="bg-green-700 hover:bg-green-800 text-white w-full lg:w-auto px-10 py-5 rounded-2xl md:rounded-[2rem] font-black text-[10px] uppercase tracking-widest shadow-xl shadow-green-900/20 transition-all active:scale-95 italic">Akses Dokumen PDF</button>
-                    </div>
-                </div>
-            `;
-        }
-
         let map;
         function initMap() {
             if (map) { map.invalidateSize(); return; }
             map = L.map('map').setView([-5.2284, 119.4624], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("<b>Desa Tinggimae</b>").openPopup();
+            L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("<b class='italic uppercase'>Desa Tinggimae</b>").openPopup();
         }
 
-        window.onload = () => setModule(1);
+        window.onload = () => { setModule(1); fetchWeather(); };
     </script>
 </body>
 </html>
