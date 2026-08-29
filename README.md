@@ -58,7 +58,6 @@
         .ai-chat-box { height: 250px; overflow-y: auto; scroll-behavior: smooth; }
         .fade-out { opacity: 0; visibility: hidden; }
         
-        /* Lontara khusus modul */
         .lontara-modul { font-size: 2rem; color: var(--p-red); line-height: 1; margin-bottom: 5px; }
     </style>
 </head>
@@ -71,13 +70,15 @@
     <div class="text-xl font-black tracking-[0.2em] text-red-700 -mt-2 italic">CARA'DE</div>
 </div>
 
-<!-- 2. HEADER -->
+<!-- 2. HEADER DENGAN URUTAN LOGO BARU -->
 <header class="sticky top-0 z-[100] glass border-b border-green-200 px-4 py-3 shadow-sm">
     <div class="max-w-7xl mx-auto flex flex-col gap-4">
         <div class="flex items-center justify-between">
+            <!-- KLUSTER LOGO (Urutan: Unhas, BEM, Tim, Gowa) -->
             <div class="flex items-center gap-2 bg-white/50 p-2 rounded-2xl border border-white">
                 <img src="logo-unhas.png" alt="UNHAS" class="h-7 w-auto">
                 <img src="logo-bem.png" alt="BEM" class="h-7 w-auto">
+                <img src="logo-tim.png" alt="TIM" class="h-7 w-auto"> <!-- LOGO TIM BARU -->
                 <img src="logo-gowa.png" alt="GOWA" class="h-7 w-auto">
                 <div class="w-[1px] h-6 bg-green-200 mx-1"></div>
                 <div class="flex flex-col">
@@ -107,23 +108,17 @@
         <button onclick="setModule(5)" class="flex-none w-32 p-3 glass rounded-2xl text-[9px] font-black uppercase border-b-4 border-purple-500 italic">05 PA'BULOANG</button>
     </div>
     
-    <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[420px]">
-        <!-- Konten diisi JS -->
-    </div>
+    <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[420px]"></div>
 </main>
 
 <!-- TAB CUACA & AI -->
 <main id="tab-cuaca" class="tab-content w-full px-4 py-6 max-w-4xl mx-auto space-y-6">
-    <div class="bg-gradient-to-br from-green-600 via-green-700 to-blue-700 text-white p-6 rounded-[2.5rem] shadow-xl">
+    <div class="bg-gradient-to-br from-green-600 to-blue-700 text-white p-6 rounded-[2.5rem] shadow-xl">
         <h2 id="live-temp" class="text-6xl font-black italic tracking-tighter">--°C</h2>
         <p id="live-desc" class="text-sm font-bold uppercase italic mt-2">Menghubungkan satelit...</p>
     </div>
     <div class="bg-white rounded-[2.5rem] p-6 shadow-xl border border-green-100">
-        <div id="ai-chat-box" class="ai-chat-box space-y-4 mb-4 no-scrollbar">
-            <div class="bg-green-50 p-4 rounded-3xl rounded-tl-none text-[11px] font-semibold italic text-green-800">
-                "Salama' ki'! Saya asisten digital CAR'ADE. Ingin tahu tentang program PPKO kami?"
-            </div>
-        </div>
+        <div id="ai-chat-box" class="ai-chat-box space-y-4 mb-4 no-scrollbar"></div>
         <div class="flex gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-200">
             <input id="ai-input" type="text" placeholder="Tanya tentang modul..." class="flex-1 bg-transparent px-4 text-[11px] font-bold outline-none italic">
             <button onclick="askAI()" class="bg-green-600 text-white w-10 h-10 rounded-full flex items-center justify-center">➜</button>
@@ -131,19 +126,17 @@
     </div>
 </main>
 
-<!-- TAB PERSONIL (ALFABET SAJA) -->
+<!-- TAB PERSONIL (TANPA LONTARA) -->
 <main id="tab-tim" class="tab-content w-full px-4 py-6 max-w-7xl mx-auto">
     <div class="mb-10 bg-green-900 text-white p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center gap-6">
         <div class="text-5xl">👨‍🏫</div>
         <div>
-            <p class="text-[10px] font-black text-green-400 uppercase italic leading-none">Dosen Pendamping</p>
-            <h3 class="text-2xl font-black uppercase italic tracking-tighter mt-1">Husnul Mubarak, S.TP., M.Si</h3>
-            <p class="text-[9px] opacity-60 font-bold uppercase mt-1 tracking-widest">Universitas Hasanuddin (UNHAS)</p>
+            <p class="text-[10px] font-black text-green-400 uppercase italic">Dosen Pendamping</p>
+            <h3 class="text-2xl font-black uppercase italic tracking-tighter">Husnul Mubarak, S.TP., M.Si</h3>
+            <p class="text-[9px] opacity-60 font-bold uppercase mt-1">Universitas Hasanuddin (UNHAS)</p>
         </div>
     </div>
-    <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <!-- Konten diisi JS -->
-    </div>
+    <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
 </main>
 
 <!-- TAB LOKASI -->
@@ -186,7 +179,6 @@
                 <h2 class="text-4xl font-black italic text-green-950 uppercase leading-none">${m.t}</h2>
                 <h4 class="text-xs font-bold text-green-600 italic mt-2 uppercase tracking-widest">${m.s}</h4>
                 <p class="text-green-800/70 text-sm italic leading-relaxed px-4 my-8">"${m.d}"</p>
-                <!-- PERBAIKAN TOMBOL PDF -->
                 <button onclick="window.open('modul${id}.pdf', '_blank')" class="w-full bg-green-700 text-white py-5 rounded-[2.5rem] font-black text-[11px] uppercase italic transition active:scale-95 shadow-xl">Buka Dokumen Modul PDF</button>
             </div>
         `;
@@ -235,7 +227,7 @@
         if (map) { map.invalidateSize(); return; }
         map = L.map('map').setView([-5.2284, 119.4624], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("Desa Tinggimae").openPopup();
+        L.marker([-5.2284, 119.4624]).addTo(map).bindPopup("<b>Desa Tinggimae</b>").openPopup();
     }
 
     window.onload = () => { setModule(1); fetchWeather(); };
