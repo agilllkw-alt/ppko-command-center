@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CARA'DE Command Center</title>
+    
+    <!-- NAMA WEB PADA TAB BROWSER -->
+    <title>CARA'DE Command Center - Desa Tinggimae</title>
     
     <!-- PWA Meta -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#16a34a">
+    <meta name="description" content="Sistem Informasi Digital CARA'DE Gowa">
     
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -91,7 +94,8 @@
                     <span class="text-[9px] text-red-600 font-bold leading-none mt-1">ᨌᨑᨉᨙ</span>
                 </div>
             </div>
-            <button onclick="alert('Notifikasi diaktifkan!')" class="bg-green-100 p-2 rounded-full text-xs shadow-sm">🔔</button>
+            <!-- Menghilangkan Alert Notifikasi agar tidak ada pop-up mengganggu -->
+            <button class="bg-green-100 p-2 rounded-full text-xs shadow-sm">🔔</button>
         </div>
 
         <nav class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
@@ -115,9 +119,8 @@
     <div id="module-display" class="bg-white rounded-[2.5rem] p-6 md:p-16 shadow-2xl border border-green-100 min-h-[420px]"></div>
 </main>
 
-<!-- TAB CUACA & AI -->
+<!-- 4. TAB CUACA & AI -->
 <main id="tab-cuaca" class="tab-content w-full px-4 py-6 max-w-4xl mx-auto space-y-6">
-    <!-- WIDGET CUACA ENHANCED -->
     <div class="weather-card text-white p-6 rounded-[2.5rem] shadow-xl">
         <div class="flex justify-between items-start">
             <div>
@@ -145,7 +148,6 @@
         </div>
     </div>
 
-    <!-- AI CHAT BOX -->
     <div class="bg-white rounded-[2.5rem] p-6 shadow-xl border border-green-100">
         <div class="flex items-center gap-2 mb-4">
             <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -161,7 +163,7 @@
     </div>
 </main>
 
-<!-- TAB PERSONIL -->
+<!-- 5. TAB PERSONIL -->
 <main id="tab-tim" class="tab-content w-full px-4 py-6 max-w-7xl mx-auto">
     <div class="mb-10 bg-green-900 text-white p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center gap-6">
         <div class="text-5xl">👨‍🏫</div>
@@ -174,7 +176,7 @@
     <div id="team-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
 </main>
 
-<!-- TAB LOKASI -->
+<!-- 6. TAB LOKASI -->
 <main id="tab-lokasi" class="tab-content w-full px-4 py-6 max-w-5xl mx-auto">
     <div id="map" class="shadow-2xl"></div>
 </main>
@@ -184,7 +186,7 @@
 </footer>
 
 <script>
-    // 1. DATA & PWA
+    // 1. DATA LENGKAP
     const mods = {
         1: { t: "APPARE'", l: "ᨕᨄᨑᨙ", s: "Teknologi Pakan", i: "⚙️", c: "orange", d: "Mesin produksi pakan mandiri yang memanfaatkan limbah lokal desa untuk meningkatkan efisiensi peternakan.", keywords: ["pakan", "mesin", "ternak", "limbah"] },
         2: { t: "MAGGOT", l: "ᨑᨁᨚ", s: "Protein Alternatif", i: "🪱", c: "green", d: "Budidaya Maggot BSF (Black Soldier Fly) sebagai pengurai sampah organik sekaligus sumber protein tinggi untuk pakan.", keywords: ["maggot", "bsf", "sampah", "protein", "organik"] },
@@ -204,7 +206,7 @@
         { n: "Pandin Bidangan T.", nim: "G011231170" }
     ];
 
-    // 2. CORE FUNCTIONS
+    // 2. CORE LOGIC
     window.addEventListener('load', () => {
         setTimeout(() => {
             document.getElementById('splash-screen').classList.add('fade-out');
@@ -241,67 +243,43 @@
     // 3. WEATHER SYSTEM
     async function fetchWeather() {
         try {
-            // Menggunakan koordinat Desa Tinggimae, Gowa
             const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-5.2284&longitude=119.4624&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=uv_index_max&timezone=Asia%2FSingapore');
             const data = await res.json();
-            
             document.getElementById('live-temp').innerText = Math.round(data.current.temperature_2m) + '°C';
             document.getElementById('weather-hum').innerText = data.current.relative_humidity_2m + '%';
             document.getElementById('weather-wind').innerText = data.current.wind_speed_10m + ' km/h';
             document.getElementById('weather-uv').innerText = data.daily.uv_index_max[0];
-            
             const codes = { 0: "Cerah", 1: "Cerah Berawan", 2: "Berawan", 3: "Mendung", 45: "Berkabut", 61: "Hujan Ringan", 95: "Badai Petir" };
             document.getElementById('live-desc').innerText = codes[data.current.weather_code] || "Berawan";
             document.getElementById('live-date').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        } catch (e) { 
-            document.getElementById('live-desc').innerText = "Gagal memuat cuaca";
-        }
+        } catch (e) { document.getElementById('live-desc').innerText = "Gagal memuat cuaca"; }
     }
 
-    // 4. AI SYSTEM (MODUL + WEB SEARCH SIMULATION)
+    // 4. AI SYSTEM
     async function askAI() {
         const inputField = document.getElementById('ai-input');
         const query = inputField.value.trim().toLowerCase();
         if (!query) return;
-
         addChatMessage(inputField.value, 'user-msg');
         inputField.value = '';
-
         const chatBox = document.getElementById('ai-chat-box');
         const loadingMsg = document.createElement('div');
         loadingMsg.className = 'message ai-msg italic opacity-50';
         loadingMsg.innerText = 'Cara\'de sedang berpikir...';
         chatBox.appendChild(loadingMsg);
-
         setTimeout(async () => {
             chatBox.removeChild(loadingMsg);
             let response = "";
-
-            // Step 1: Cari di Modul Internal
-            let foundMod = Object.values(mods).find(m => 
-                m.keywords.some(key => query.includes(key)) || query.includes(m.t.toLowerCase())
-            );
-
-            if (foundMod) {
-                response = `Berdasarkan modul <b>${foundMod.t} (${foundMod.s})</b>: ${foundMod.d} Apakah Anda ingin membuka file PDF-nya?`;
+            let foundMod = Object.values(mods).find(m => m.keywords.some(key => query.includes(key)) || query.includes(m.t.toLowerCase()));
+            if (foundMod) { 
+                response = `Berdasarkan modul <b>${foundMod.t}</b>: ${foundMod.d}`; 
+            } else if (query.includes("tinggimae")) {
+                response = "Desa Tinggimae adalah lokasi pelaksanaan program CARA'DE yang fokus pada inovasi pakan, maggot, dan IoT.";
             } else {
-                // Step 2: Simulasi Pencarian Internet / Global Knowledge
-                response = await simulateWebSearch(query);
+                response = `Maaf, saya tidak menemukan info spesifik tentang "${query}" di modul, namun ini berkaitan dengan teknologi desa.`;
             }
-
             addChatMessage(response, 'ai-msg');
         }, 1000);
-    }
-
-    async function simulateWebSearch(q) {
-        // Logika sederhana untuk menjawab pertanyaan umum di luar modul
-        if (q.includes("halo") || q.includes("hi")) return "Halo! Ada yang bisa saya bantu mengenai teknologi desa?";
-        if (q.includes("unhas")) return "Universitas Hasanuddin (UNHAS) adalah kampus merah, almamater tim CARA'DE!";
-        if (q.includes("tinggimae")) return "Desa Tinggimae terletak di Kecamatan Somba Opu, Gowa, Sulawesi Selatan.";
-        if (q.includes("cuaca")) return "Anda bisa melihat panel cuaca di atas untuk kondisi terkini di Desa Tinggimae.";
-        
-        // Default Fallback (Internet Simulation)
-        return `Saya tidak menemukan jawaban spesifik di modul internal, namun berdasarkan informasi umum: Pencarian untuk "${q}" merujuk pada inovasi teknologi pertanian dan pemberdayaan masyarakat desa.`;
     }
 
     function addChatMessage(text, type) {
@@ -313,7 +291,7 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // 5. NAVIGATION & MAPS
+    // 5. NAVIGATION
     function showTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
