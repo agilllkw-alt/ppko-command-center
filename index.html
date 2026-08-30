@@ -1,0 +1,65 @@
+<!-- NAMA WEB PADA TAB BROWSER -->
+<title>CARA'DE Command Center - Desa Tinggimae</title>
+
+<!-- PWA Meta -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<meta name="description" content="Sistem Informasi Digital CARA'DE Gowa">
+
+<!-- Dependencies -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space_Grotesk:wght@700&display=swap" rel="stylesheet">
+
+<style>
+    :root { --p-green: #16a34a; --dark: #064e3b; --p-red: #dc2626; }
+    
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); 
+        background-attachment: fixed;
+        color: var(--dark);
+        margin: 0;
+        padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+    }
+
+    /* --- SPLASH SCREEN --- */
+    #splash-screen {
+        position: fixed; inset: 0; z-index: 9999; background: white;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    .songkok-anim {
+        width: 150px; height: auto;
+        animation: bounceIn 1.2s forwards;
+    }
+    .lontara-splash {
+        font-size: 3rem; color: var(--p-red); margin-top: 10px;
+    }
+    @keyframes bounceIn {
+        0% { transform: scale(0); opacity: 0; }
+        70% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+
+    /* --- UI STYLING --- */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.7); }
+    .tab-content { display: none; width: 100%; }
+    .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .nav-btn.active { background: var(--p-green); color: white; box-shadow: 0 8px 15px rgba(22, 163, 74, 0.2); }
+    #map { height: 300px; width: 100%; border-radius: 1.5rem; border: 4px solid white; z-index: 10; }
+    
+    .ai-chat-box { height: 300px; overflow-y: auto; scroll-behavior: smooth; }
+    .message { margin-bottom: 12px; padding: 10px 15px; border-radius: 18px; font-size: 12px; max-width: 85%; }
+    .user-msg { background: var(--p-green); color: white; align-self: flex-end; margin-left: auto; border-bottom-right-radius: 4px; }
+    .ai-msg { background: white; color: var(--dark); border: 1px solid #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; }
+    
+    .fade-out { opacity: 0; visibility: hidden; }
+    .lontara-modul { font-size: 2rem; color: var(--p-red); line-height: 1; margin-bottom: 5px; }
+    
+    .weather-card { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
+</style>
